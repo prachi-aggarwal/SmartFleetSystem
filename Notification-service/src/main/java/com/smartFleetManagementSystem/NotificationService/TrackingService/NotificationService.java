@@ -1,4 +1,5 @@
 package com.smartFleetManagementSystem.NotificationService.TrackingService;
+import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,16 @@ public class NotificationService {
 
         return unreadNotifications;
     }
+    public Notification createNotification(Notification dto) {
+        Notification notification = new Notification();
+        notification.setRecipientType(dto.getRecipientType());
+        notification.setRecipientId(dto.getRecipientId());
+        notification.setMessage(dto.getMessage());
+        notification.setRead(false);
+        notification.setTimestamp(LocalDateTime.now());
+
+        return notificationRepository.save(notification);
+    }
+
 
 }

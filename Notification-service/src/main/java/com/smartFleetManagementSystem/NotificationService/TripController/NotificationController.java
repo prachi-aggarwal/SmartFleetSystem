@@ -2,8 +2,11 @@ package com.smartFleetManagementSystem.NotificationService.TripController;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +15,7 @@ import com.smartFleetManagementSystem.NotificationService.DTO.Notification;
 import com.smartFleetManagementSystem.NotificationService.TrackingService.NotificationService;
 
 @RestController
-@RequestMapping("/Notifications")
+@RequestMapping("/notifications")
 public class NotificationController {
 
     
@@ -27,5 +30,11 @@ public class NotificationController {
     ) {
         return ResponseEntity.ok(notificationService.getUnreadByRecipient(recipientType, recipientId));
     }
+    @PostMapping("sendNotification")
+    public ResponseEntity<Notification> sendNotification(
+        @RequestBody Notification notificationDTO) {
+        Notification saved = notificationService.createNotification(notificationDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    } 
 
 }

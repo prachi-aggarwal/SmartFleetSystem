@@ -19,7 +19,7 @@ import com.smartFleetManagementSystem.Fleet_service.fleetService.fuelService;
 import com.smartFleetManagementSystem.Fleet_service.fleetService.vehicleService;
 
 @RestController
-@RequestMapping("fleet-service")
+@RequestMapping("/")
 public class vehicleController {
 	
 	private final vehicleService vehicleService;

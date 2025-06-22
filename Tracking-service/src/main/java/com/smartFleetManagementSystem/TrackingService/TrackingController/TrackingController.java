@@ -1,4 +1,4 @@
-package com.smartFleetManagementSystem.TrackingService.TripController;
+package com.smartFleetManagementSystem.TrackingService.TrackingController;
 
 import java.util.List;
 
