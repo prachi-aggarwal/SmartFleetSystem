@@ -1,6 +1,7 @@
 package com.smartFleetManagementSystem.TripService.TripController;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class TripController {
     }
 
     @GetMapping("getAllTrips")
-    public ResponseEntity<List<Trip>> getAllTrips() {
+    public ResponseEntity<Map<String, Object>> getAllTrips() {
         return ResponseEntity.ok(tripService.getAllTrips());
     }
 

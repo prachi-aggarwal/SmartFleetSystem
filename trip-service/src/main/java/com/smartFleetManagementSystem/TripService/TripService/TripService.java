@@ -70,8 +70,15 @@ public class TripService {
         return tripRepository.save(trip);
     }
 
-    public List<Trip> getAllTrips() {
-        return tripRepository.findAll();
+    public Map<String, Object>  getAllTrips() {
+    	List<Trip> tripList= tripRepository.findAll();
+    	List<String> columnNames=tripRepository.getDriverColumnNames();   	//System.out.println("vehicles"+vehicles);
+    	
+   	 Map<String, Object> response = new HashMap<>();
+   	    response.put("columns", columnNames);
+   	    response.put("data", tripList);
+   	    return response;
+        
     }
 
     public Trip getTripById(Long id) {

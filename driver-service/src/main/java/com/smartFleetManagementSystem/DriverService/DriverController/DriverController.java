@@ -1,6 +1,7 @@
 package com.smartFleetManagementSystem.DriverService.DriverController;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class DriverController {
     }
 
     @GetMapping("getAllDriver")
-    public ResponseEntity<List<Driver>> getAllDrivers() {
+    public ResponseEntity<Map<String, Object>> getAllDrivers() {
         return ResponseEntity.ok(driverService.getAllDrivers());
     }
 

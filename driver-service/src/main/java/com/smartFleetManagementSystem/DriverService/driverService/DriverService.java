@@ -20,8 +20,15 @@ public class DriverService {
         return driverRepository.save(driver);
     }
 
-    public List<Driver> getAllDrivers() {
-        return driverRepository.findAll();
+    public Map<String, Object>  getAllDrivers() {
+    	List<Driver> driverList=driverRepository.findAll();;
+    	List<String> columnNames=driverRepository.getDriverColumnNames();   	//System.out.println("vehicles"+vehicles);
+    	
+    	 Map<String, Object> response = new HashMap<>();
+    	    response.put("columns", columnNames);
+    	    response.put("data", driverList);
+    	    return response;
+       
     }
 
     public Driver getDriverById(Long id) {
