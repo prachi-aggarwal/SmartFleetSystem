@@ -17,10 +17,12 @@ const DriverService = () => {
   const [isViewDriver, setIsViewDriver] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [editableData, setEditableData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const url = process.env.REACT_APP_BASE_URL;
 
   const fetchAllDrivers = () => {
+    setIsLoading(true);
     axios.get(`${url}driver-service/drivers/getAllDriver`, {
       headers: { 'Content-Type': 'application/json' }
     })
@@ -65,7 +67,10 @@ const DriverService = () => {
           console.error("Error setting up request:", error.message);
         }
         //alert('Failed to fetch drivers');
-      });
+      })
+      .finally(() => {
+      setIsLoading(false); // hide loader
+    });
   };
 
   const handleAddDriverClick = () => {
@@ -111,6 +116,11 @@ const DriverService = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col font-inter">
       {isAllDriverClick ? (
+         isLoading ? (
+    <div className="flex justify-center items-center h-96">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
+    </div>
+  ) :(
         <AllEntityTable
           title="All Driver Details"
           data={driverData}
@@ -120,6 +130,7 @@ const DriverService = () => {
           onDelete={handleDeleteDriver}
           onBackClick={() => setIsAllDriverClick(false)}
         />
+  )
       ) : (
         <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 lg:p-10">
           <Header />

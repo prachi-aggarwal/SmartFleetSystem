@@ -26,6 +26,7 @@ const FleetService = () => {
   const [vehicleData, setVehicleData] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedVehicleToEdit, setSelectedVehicleToEdit] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); //loading state
 
 
 
@@ -42,6 +43,7 @@ const FleetService = () => {
     setIsAddVehicleDialogOpen(false);
   };
   const fetchAllVehicleData = () => {
+    setIsLoading(true);
     axios.get(`${url}fleet-service/allFleet`, {
       headers: { 'Content-Type': 'application/json' }
     })
@@ -68,6 +70,9 @@ const FleetService = () => {
       })
       .catch(error => {
         console.error('Error fetching vehicles:', error);
+      })
+      .finally(() => {
+        setIsLoading(false); // hide loader
       });
   };
 
@@ -90,30 +95,42 @@ const FleetService = () => {
 
 
 
-  const handleOnDelete = (vehicle) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete vehicle with plate number "${vehicle.plateNumber}"?`);
-    if (!confirmDelete) return;
+ const handleOnDelete = (vehicle) => {
+  const confirmDelete = window.confirm(`Are you sure you want to delete vehicle with plate number "${vehicle.plateNumber}"?`);
+  if (!confirmDelete) return;
 
-    axios.delete(`${url}fleet-service/delete/${vehicle.id}`, {
-      headers: { 'Content-Type': 'application/json' }
+  setIsLoading(true);
+
+  axios.delete(`${url}fleet-service/delete/${vehicle.id}`, {
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(() => {
+      alert("Vehicle deleted successfully!");
+      fetchAllVehicleData(); // Refresh table
     })
-      .then(response => {
-        alert("Vehicle deleted successfully!");
-        fetchAllVehicleData(); // Refresh table data after deletion
-      })
-      .catch(error => {
-        console.error('Delete error:', error);
-        alert("Failed to delete vehicle.");
-      });
-  };
+    .catch(error => {
+      console.error('Delete error:', error);
+      alert("Failed to delete vehicle.");
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+};
+
 
 
 
   return (
     <>
       {isAllVehicleClick ? (
+         isLoading ? (
+          <div className="flex justify-center items-center h-96">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
+          </div>
+        ) :(
         <AllEntityTable onView={handleOView} onUpdate={handleOnUpdate} onDelete={handleOnDelete} title={"All Vehicle Details"} data={allVehicleData} columns={allVehicleColumn} onBackClick={() => setIsAllVehicleClick(false)} />
-      ) : (
+      )
+     ) : (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col  font-inter">
           <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 lg:p-10">
 

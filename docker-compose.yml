@@ -1,0 +1,171 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - fleet-net
+
+  api-gateway:
+    build: ./APIgateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    environment:
+
+      SPRING_APPLICATION_NAME: api-gateway
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED: "true"
+      SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_LOWER-CASE-SERVICE-ID: "true"
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_CLIENT_INITIALINSTANCEINFOREPLICATIONINTERVALSECONDS: 10
+      EUREKA_CLIENT_REGISTRATION_RETRY_INTERVAL_SECONDS: 10
+
+    networks:
+      - fleet-net
+
+  driver-service:
+    build: ./driver-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - driver-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://driver-db:5432/driver_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 900011
+    networks:
+      - fleet-net
+
+  driver-db:
+    image: postgres:15
+    container_name: driver-db
+    environment:
+      POSTGRES_DB: driver_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 900011
+    volumes:
+      - driver-data:/var/lib/postgresql/data
+    networks:
+      - fleet-net
+
+  trip-service:
+    build: ./trip-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - trip-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://trip-db:5432/trip_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 900011
+    networks:
+      - fleet-net
+
+  trip-db:
+    image: postgres:15
+    container_name: trip-db
+    environment:
+      POSTGRES_DB: trip_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 900011
+    volumes:
+      - trip-data:/var/lib/postgresql/data
+    networks:
+      - fleet-net
+
+  fleet-service:
+    build: ./fleet-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+      - fleet-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://fleet-db:5432/fleetDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 900011
+    networks:
+      - fleet-net
+
+  fleet-db:
+    image: postgres:15
+    container_name: fleet-db
+    environment:
+      POSTGRES_DB: fleetDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 900011
+    volumes:
+      - fleet-data:/var/lib/postgresql/data
+    networks:
+      - fleet-net
+
+  tracking-service:
+    build: ./Tracking-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - tracking-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://tracking-db:5432/trackingDb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 900011
+    networks:
+      - fleet-net
+
+  tracking-db:
+    image: postgres:15
+    container_name: tracking-db
+    environment:
+      POSTGRES_DB: trackingDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 900011
+    volumes:
+      - tracking-data:/var/lib/postgresql/data
+    networks:
+      - fleet-net
+
+  notification-service:
+    build: ./Notification-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - notification-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notification-db:5432/notificationDb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 900011
+    networks:
+      - fleet-net
+
+  notification-db:
+    image: postgres:15
+    container_name: notification-db
+    environment:
+      POSTGRES_DB: notificationDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 900011
+    volumes:
+      - notification-data:/var/lib/postgresql/data
+    networks:
+      - fleet-net
+
+volumes:
+  driver-data:
+  trip-data:
+  fleet-data:
+  tracking-data:
+  notification-data:
+
+
+networks:
+  fleet-net:

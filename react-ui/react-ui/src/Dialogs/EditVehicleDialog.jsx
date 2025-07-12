@@ -9,6 +9,7 @@ const EditVehicleDialog = ({ isOpen, onClose, vehicle, onSave }) => {
     capacity: '',
     active: false
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (vehicle) {
@@ -30,24 +31,27 @@ const EditVehicleDialog = ({ isOpen, onClose, vehicle, onSave }) => {
   };
 
   const handleSubmit = () => {
-    const updatedData={ ...vehicle, ...formData };
-    console.log("updateData",updatedData);
-  
-     const url = process.env.REACT_APP_BASE_URL;
-axios.post(`${url}fleet-service/update/${updatedData.id}`, updatedData, {
-  headers: { 'Content-Type': 'application/json' }
-})
-.then(response => {
-  console.log('Vehicle added successfully:', response.data);
-  alert("Vehicle updated successfully!");
-   onSave({ ...vehicle, ...formData });
-  onClose(); // Close the dialog
-})
-.catch(error => {
-  console.error('Error adding vehicle:', error);
-  alert("Failed to add vehicle.");
-});
-    onClose();
+    setIsLoading(true);
+    const updatedData = { ...vehicle, ...formData };
+    console.log("updateData", updatedData);
+
+    const url = process.env.REACT_APP_BASE_URL;
+    axios.post(`${url}fleet-service/update/${updatedData.id}`, updatedData, {
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(response => {
+        console.log('Vehicle added successfully:', response.data);
+        //alert("Vehicle updated successfully!");
+        onSave({ ...vehicle, ...formData });
+        onClose();
+      })
+      .catch(error => {
+        console.error('Error adding vehicle:', error);
+        //alert("Failed to add vehicle.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   if (!isOpen || !vehicle) return null;
@@ -111,9 +115,34 @@ axios.post(`${url}fleet-service/update/${updatedData.id}`, updatedData, {
         <div className="flex justify-end mt-6">
           <button
             onClick={handleSubmit}
-            className="bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700"
+            disabled={isLoading}
+            className={`bg-blue-600 text-white font-semibold px-4 py-2 rounded flex items-center ${
+              isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-700'
+            }`}
           >
-            Save
+            {isLoading && (
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+            )}
+            {isLoading ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>

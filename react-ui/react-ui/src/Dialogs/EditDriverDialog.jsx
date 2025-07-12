@@ -10,6 +10,8 @@ const EditDriverDialog = ({ isOpen, onClose, driver, onSave }) => {
     available: false
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (driver) {
       setFormData({
@@ -30,6 +32,7 @@ const EditDriverDialog = ({ isOpen, onClose, driver, onSave }) => {
   };
 
   const handleSubmit = () => {
+    setIsLoading(true);
     const updatedData = { ...driver, ...formData };
     console.log("updateData", updatedData);
 
@@ -39,13 +42,15 @@ const EditDriverDialog = ({ isOpen, onClose, driver, onSave }) => {
     })
       .then(response => {
         console.log('Driver updated successfully:', response.data);
-       // alert("Driver updated successfully!");
-        onSave(updatedData); // Notify parent to update list
+        onSave(updatedData);
         onClose();
       })
       .catch(error => {
         console.error('Error updating driver:', error);
         alert("Failed to update driver.");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -109,9 +114,34 @@ const EditDriverDialog = ({ isOpen, onClose, driver, onSave }) => {
         <div className="flex justify-end mt-6">
           <button
             onClick={handleSubmit}
-            className="bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700"
+            disabled={isLoading}
+            className={`bg-blue-600 text-white font-semibold px-4 py-2 rounded flex items-center ${
+              isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-700'
+            }`}
           >
-            Save
+            {isLoading && (
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+            )}
+            {isLoading ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>
