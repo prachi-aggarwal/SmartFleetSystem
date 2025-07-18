@@ -1,15 +1,24 @@
-# Use OpenJDK 17 slim image as base
-FROM openjdk:21-jdk-slim
+# Stage 1: Build the Spring Boot app using Maven
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-
-# Create a directory inside the container
 WORKDIR /app
 
-# Copy the built JAR file from your local machine into the container
-COPY target/*.jar DriverService-0.0.1-SNAPSHOT.jar
+# Copy the entire project
+COPY . .
 
-# Expose the port the app runs on (adjust per service if needed)
+# Build the JAR, skipping tests
+RUN mvn clean package -DskipTests
+
+# Stage 2: Use OpenJDK 21 slim image to run the app
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Copy the built JAR from the build stage
+COPY --from=build /app/target/*.jar DriverService-0.0.1-SNAPSHOT.jar
+
+# Expose the service port
 EXPOSE 8081
 
-# Run the jar file
+# Run the jar
 ENTRYPOINT ["java", "-jar", "DriverService-0.0.1-SNAPSHOT.jar"]

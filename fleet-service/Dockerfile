@@ -1,15 +1,24 @@
-# Use OpenJDK 17 slim image as base
-FROM openjdk:21-jdk-slim
+# Stage 1: Build the application using Maven
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-
-# Create a directory inside the container
 WORKDIR /app
 
-# Copy the built JAR file from your local machine into the container
-COPY  target/*.jar Fleet-service-0.0.1-SNAPSHOT.jar
+# Copy all project files
+COPY . .
 
-# Expose the port the app runs on (adjust per service if needed)
+# Package the application (skip tests for faster build)
+RUN mvn clean package -DskipTests
+
+# Stage 2: Use a slim JDK image to run the built jar
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Copy the built JAR from the Maven container
+COPY --from=build /app/target/*.jar fleet-service-0.0.1-SNAPSHOT.jar
+
+# Expose service port (adjusted for fleet-service)
 EXPOSE 8085
 
-# Run the jar file
-ENTRYPOINT ["java", "-jar", "Fleet-service-0.0.1-SNAPSHOT.jar"]
+# Run the application
+ENTRYPOINT ["java", "-jar", "fleet-service-0.0.1-SNAPSHOT.jar"]
