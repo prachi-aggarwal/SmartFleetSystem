@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smartFleetManagementSystem.NotificationService.DTO.Notification;
-import com.smartFleetManagementSystem.NotificationService.TrackingService.NotificationService;
+import com.smartFleetManagementSystem.NotificationService.NotificationService.NotificationService;
 
 @RestController
 @RequestMapping("/notifications")
@@ -24,11 +24,8 @@ public class NotificationController {
     	this.notificationService=notificationService;
     }
     @GetMapping("/unread")
-    public ResponseEntity<List<Notification>> getUnreadByRecipient(
-        @RequestParam String recipientType,
-        @RequestParam Long recipientId
-    ) {
-        return ResponseEntity.ok(notificationService.getUnreadByRecipient(recipientType, recipientId));
+    public ResponseEntity<List<Notification>> getUnreadByRecipient() {
+        return ResponseEntity.ok(notificationService.getUnreadByRecipient());
     }
     @PostMapping("sendNotification")
     public ResponseEntity<Notification> sendNotification(
@@ -36,5 +33,9 @@ public class NotificationController {
         Notification saved = notificationService.createNotification(notificationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     } 
+    @GetMapping("/all")
+    public ResponseEntity<List<Notification>> getAll() {
+        return ResponseEntity.ok(notificationService.getAll());
+    }
 
 }

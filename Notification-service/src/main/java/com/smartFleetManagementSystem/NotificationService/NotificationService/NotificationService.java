@@ -1,10 +1,14 @@
-package com.smartFleetManagementSystem.NotificationService.TrackingService;
+package com.smartFleetManagementSystem.NotificationService.NotificationService;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.smartFleetManagementSystem.NotificationService.DTO.Notification;
 import com.smartFleetManagementSystem.NotificationService.Repository.NotificationRepository;
+import com.smartFleetManagementSystem.NotificationService.event.NotificationEvent;
 
 
 @Service
@@ -14,8 +18,8 @@ public class NotificationService {
     public NotificationService(NotificationRepository notificationRepository) {
     	this.notificationRepository=notificationRepository;
     }
-    public List<Notification> getUnreadByRecipient(String type, Long id) {
-      List<Notification> unreadNotifications=  notificationRepository.findByRecipientTypeAndRecipientIdAndReadFalse(type, id);
+    public List<Notification> getUnreadByRecipient() {
+      List<Notification> unreadNotifications=  notificationRepository.findAll();
         
         unreadNotifications.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(unreadNotifications);
@@ -32,6 +36,21 @@ public class NotificationService {
 
         return notificationRepository.save(notification);
     }
+//    @KafkaListener(topics = "notification-topic", groupId = "smart-fleet")
+//    public void consume(NotificationEvent event) {
+//        Notification notification = new Notification();
+//        notification.setRecipientType(event.getRecipientType());
+//        notification.setRecipientId(Long.parseLong(event.getRecipientId()));
+//        notification.setMessage(event.getMessage());
+//        notification.setTimestamp(event.getTimestamp());
+//        notification.setRead(false);
+//        notificationRepository.save(notification);
+//    }
+    
+    public List<Notification> getAll() {
+        return notificationRepository.findAll();
+    }
+	
 
 
 }
