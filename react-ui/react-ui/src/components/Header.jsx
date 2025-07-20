@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Truck, Menu, BellRing } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NotificationDrawer from './NotificationDrawer';
+import axios from 'axios';
 
 const Header = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -23,6 +24,34 @@ const Header = () => {
       time: "1 hour ago"
     }
   ];
+  const url = process.env.REACT_APP_BASE_URL;
+  const handleClosenotification=()=>{
+        console.log("inside close notification");
+        
+    axios.post(`${url}notification-service/getUnreadByRecipient`, {
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(response => {
+        console.log('notification closed ', response.data);
+        //alert("Vehicle added successfully!");
+        setDrawerOpen(false);
+      })
+      .catch(error => {
+        if (error.response) {
+          console.error("Error Status:", error.response.status);
+          console.error("Error Data:", error.response.data);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Request setup error:", error.message);
+        }
+        alert("Failed to add vehicle.");
+      })
+      .finally(() => {
+    
+         setDrawerOpen(false);
+      });
+  }
 
   return (
     <>
@@ -57,7 +86,7 @@ const Header = () => {
 
       <NotificationDrawer
         isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        onClose={handleClosenotification}
         notifications={notifications}
       />
     </>

@@ -14,8 +14,12 @@ const TripService = () => {
   const [tripData, setTripData] = useState(null);
   const [columnData, setColumnData] = useState(null);
   const [viewTripData, setViewTripData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); //loading state
+  
   const url = process.env.REACT_APP_BASE_URL;
   const fetchAllTripData = async () => {
+    
+    setIsLoading(true);
     await axios.get(`${url}trip-service/trips/getAllTrips`, {
       headers: { 'Content-Type': 'application/json' }
     })
@@ -69,10 +73,13 @@ const TripService = () => {
         console.log("mappedColumns", mappedColumns);
         setTripData(response.data.data);
         setColumnData(mappedColumns);
-        setViewTripData(true); 
+       
       })
       .catch(error => {
         console.error('Error fetching vehicles:', error);
+      })
+     .finally(() => {
+        setIsLoading(false); 
       });
   };
   const handlePlanTripClick = () => { // New handler
@@ -82,7 +89,7 @@ const TripService = () => {
     setIsAddPlanTripDialogOpen(false);
   };
   const handleViewTripClick = () => {
-    
+     setViewTripData(true); 
     fetchAllTripData();
   
     
@@ -100,7 +107,11 @@ const TripService = () => {
   }
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col font-inter">
-      {viewTripData ? (
+      {viewTripData ? (isLoading ? (
+          <div className="flex justify-center items-center h-96">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
+          </div>
+        ) : (
         <AllEntityTable
           title="All Trips Details"
           data={tripData}
@@ -110,7 +121,7 @@ const TripService = () => {
           onDelete={handleDeleteTrip}
           onBackClick={() => setViewTripData(false)}
         />
-      ) : (
+      )) : (
         <div className="w-full  bg-gray-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 lg:p-10">
 
           <Header />

@@ -13,7 +13,8 @@ public class GatewayCorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("https://smart-fleet-system.vercel.app/"); // frontend URL
+        config.addAllowedOrigin("https://smart-fleet-system.vercel.app/"); 
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
