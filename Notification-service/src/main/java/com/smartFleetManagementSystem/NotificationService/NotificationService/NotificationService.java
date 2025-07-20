@@ -3,12 +3,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.smartFleetManagementSystem.NotificationService.DTO.Notification;
 import com.smartFleetManagementSystem.NotificationService.Repository.NotificationRepository;
-import com.smartFleetManagementSystem.NotificationService.event.NotificationEvent;
 
 
 @Service
